@@ -1,4 +1,5 @@
 import AppLogo from "@/src/utility/AppLogo"
+import DarkModeToggle from "../common/DarkModeToggle"
 
 export default function DashboardNavbar() {
     return (
@@ -6,7 +7,7 @@ export default function DashboardNavbar() {
             <div className="pr-6 flex items-center justify-between w-full">
                 <AppLogo />
                 <div className="flex gap-x-3">
-                    DarkModeToggle
+                    <DarkModeToggle />
                     NavbarSignin
                 </div>
             </div>
