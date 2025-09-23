@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import router from './router';
 import WebSocketClass from './socket/socket';
 import http from 'http';
 
@@ -15,11 +17,11 @@ if (!PORT) {
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'Websocket is running...'
-    });
-});
+app.use(cors({
+    origin: 'http://localhost:3000'
+}))
+
+app.use('/api/v1', router);
 
 const server = http.createServer(app);
 new WebSocketClass(server);

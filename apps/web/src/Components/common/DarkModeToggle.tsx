@@ -7,7 +7,7 @@ import { CiDark, CiLight } from 'react-icons/ci';
 export default function DarkModeToggle() {
     const { theme, setTheme } = useThemeMode();
 
-    const isDarkMode = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: drak)').matches);
+    const isDarkMode = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     const toggleTheme = () => {
         setTheme(isDarkMode ? 'light' : 'dark');

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../../../../../packages/db';
 import jwt from 'jsonwebtoken';
 
-export default async function upsertUser(req: Request, res: Response) {
+export default async function signInHandler(req: Request, res: Response) {
     const { user } = req.body;
 
     try {
