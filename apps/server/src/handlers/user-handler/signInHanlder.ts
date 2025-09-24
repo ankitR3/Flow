@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../../../../packages/db';
+import prisma from '@repo/db';
 import jwt from 'jsonwebtoken';
 
 export default async function signInHandler(req: Request, res: Response) {

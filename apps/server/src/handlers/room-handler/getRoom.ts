@@ -1,4 +1,4 @@
-import prisma from '../../../../../packages/db';
+import prisma from '@repo/db';
 import { Request, Response } from 'express';
 
 export default async function getRoom(req: Request, res: Response) {

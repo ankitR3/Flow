@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import prisma from '../../../../packages/db';
+import prisma from '@repo/db';
 
 export default async function ownerAuthMiddleware(req: Request, res: Response, next: NextFunction) {
     const { userId } = req.headers;
