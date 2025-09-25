@@ -8,7 +8,7 @@ export default function DashboardNavbar() {
                 <AppLogo />
                 <div className="flex gap-x-3">
                     <DarkModeToggle />
-                    NavbarSignin
+                    
                 </div>
             </div>
         </div>
