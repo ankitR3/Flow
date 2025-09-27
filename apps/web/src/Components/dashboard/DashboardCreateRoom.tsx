@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,8 +12,25 @@ import { useUserSessionStore } from '@/src/store/useUserSessionStore';
 import { useWebSocket } from '@/src/hooks/useSocket';
 
 export default function DashboardCreateRoom() {
-    const { session } = useUserSessionStore();
+    const { session, isLoading, setSession } = useUserSessionStore();
     const { subscribe } = useWebSocket();
+
+    // useEffect(() => {
+    //     // Temporary mock session for testing
+    //     const mockSession = {
+    //         user: {
+    //             id: 'test-user-id',
+    //             name: 'Test User',
+    //             email: 'test@example.com',
+    //             token: 'mock-token'
+    //         },
+    //         expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
+    //     };
+        
+    //     setSession(mockSession);
+    // }, [setSession]);
+
+    // console.log('Session state:', { session, isLoading });
 
     const [formData, setFormData] = useState({
         name: '',
@@ -63,7 +80,7 @@ export default function DashboardCreateRoom() {
         }
     };
 
-    if (!session?.user?.id) {
+    if (isLoading || !session?.user?.id) {
         return (
             <div className='h-full w-full flex justify-center items-center p-4'>
                 <Card className='w-full max-w-md p-6 text-center'>

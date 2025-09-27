@@ -4,7 +4,7 @@ import DashboardRight from "./DashboardRight";
 
 export default function DashboardBase() {
     return (
-        <div className="w-full h-full max-h-[90%] bg-neutral-200">
+        <div className="w-full h-full max-h-[90%] bg-neutral-900">
             <div className="fixed w-full z.[990]">
                 <DashboardNavbar />
             </div>

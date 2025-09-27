@@ -25,6 +25,7 @@ class WebSocketClient {
 
             this.setStatus(WebSocketStatus.CONNECTING);
             this.ws = new WebSocket(this.url);
+            // console.log('WebSocket URL:', this.url);
 
             this.ws.onopen = () => {
                 this.setStatus(WebSocketStatus.CONNECTED);

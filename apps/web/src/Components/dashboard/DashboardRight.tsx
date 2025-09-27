@@ -5,7 +5,7 @@ import { DashboardNavEnum } from '@/src/types/DashboardNavEnum';
 import DashboardHome from './DashboardHome';
 import DashboardCreateRoom from './DashboardCreateRoom';
 import DashboardProfile from './DashboardProfile';
-// import DashboardSettings
+import DashboardSettings from './DashboardSettings';
 import DashboardMyRooms from './DashboardMyRoom';
 
 export default function DashboardRight() {
@@ -22,8 +22,8 @@ export default function DashboardRight() {
                 return <DashboardMyRooms />
             case DashboardNavEnum.PROFILE:
                 return <DashboardProfile />
-            // case DashboardNavEnum.SETTINGS:
-            //     return <DashboardSettings />
+            case DashboardNavEnum.SETTINGS:
+                return <DashboardSettings />
         }
     }
 
