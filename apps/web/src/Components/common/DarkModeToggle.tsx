@@ -1,77 +1,32 @@
-'use client'
+"use client";
 
-import { useThemeMode } from '@/src/store/useThemeStore';
-import TooltipComponent from '@/src/utility/ToolTipComponent';
-import { CiDark, CiLight } from 'react-icons/ci';
-import { useEffect, useState } from 'react';
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import "@theme-toggles/react/css/Classic.css";
+import { Classic } from "@theme-toggles/react";
 
 export default function DarkModeToggle() {
-    const { theme, setTheme } = useThemeMode();
+    const { resolvedTheme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    useEffect(() => setMounted(true), []);
 
-    useEffect(() => {
-        if (!mounted) {
-            return;
-        }
+    if (!mounted) return null;
 
-        if (theme === 'dark') {
-            setIsDarkMode(true);
-        } else if (theme === 'light') {
-            setIsDarkMode(false);
-        } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setIsDarkMode(prefersDark);
-        }
-    }, [theme, mounted]);
-
-    const toggleTheme = () => {
-        if (theme === 'dark') {
-            setTheme('light');
-        } else if (theme === 'light') {
-            setTheme('dark');
-        } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setTheme(prefersDark ? 'light' : 'dark');
-        }
-    };
-
-    if (!mounted) {
-        return (
-            <TooltipComponent content='Switch theme'>
-                <div className=''>
-                    <button
-                        type='button'
-                        className='flex items-center gap-2 px-3 py-2 dark:bg-transparent bg-gray-100 rounded-lg transition-all duration-200 transform hover:scale-105'
-                        disabled
-                    >
-                        <CiLight className='text-xl' />
-                    </button>
-                </div>
-            </TooltipComponent>
-        );
-    }
+    const isDark = resolvedTheme === "dark";
 
     return (
-        <TooltipComponent content={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}>
-            <div className=''>
-                <button
-                    type='button'
-                    onClick={toggleTheme}
-                    className='flex items-center gap-2 px-3 py-2 dark:bg-transparent bg-gray-100 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95'
-                    aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-                >
-                    {isDarkMode ? (
-                        <CiLight className='text-xl text-yellow-400' />
-                    ) : (
-                        <CiDark className='text-lg text-gray-700' />
-                    )}
-                </button>
-            </div>
-        </TooltipComponent>
-    )
+        <Classic
+            className="dark:bg-white bg-black font-sans dark:text-white text-black text-2xl"
+            text-xl
+            toggled={isDark}
+            toggle={(next) => {
+                const newVal =
+                    typeof next === "function" ? next(isDark) : next;
+                setTheme(newVal ? "dark" : "light");
+            }}
+            duration={750}
+            {...({} as React.ComponentProps<typeof Classic>)}
+        />
+    );
 }

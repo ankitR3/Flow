@@ -1,7 +1,7 @@
 'use client'
 
-import { useDashboardNavStore } from '@/src/store/useDashboardNavStore';
-import { DashboardNavEnum } from '@/src/types/DashboardNavEnum';
+import { useDashboardRendererStore } from '@/src/store/useDashboardRendererStore';
+import { DashboardRendererEnum } from '@/src/types/DashboardRendererEnum';
 import DashboardHome from './DashboardHome';
 import DashboardCreateRoom from './DashboardCreateRoom';
 import DashboardProfile from './DashboardProfile';
@@ -11,18 +11,18 @@ import DashboardMyRooms from './DashboardMyRoom';
 export default function DashboardRight() {
     
     function handleRightSection() {
-        const { value } = useDashboardNavStore();
+        const { value } = useDashboardRendererStore();
 
         switch (value) {
-            case DashboardNavEnum.HOME:
+            case DashboardRendererEnum.HOME:
                 return <DashboardHome />
-            case DashboardNavEnum.CREATE_ROOM:
+            case DashboardRendererEnum.CREATE_ROOM:
                 return <DashboardCreateRoom />
-            case DashboardNavEnum.MY_ROOMS:
+            case DashboardRendererEnum.MY_ROOMS:
                 return <DashboardMyRooms />
-            case DashboardNavEnum.PROFILE:
+            case DashboardRendererEnum.PROFILE:
                 return <DashboardProfile />
-            case DashboardNavEnum.SETTINGS:
+            case DashboardRendererEnum.SETTINGS:
                 return <DashboardSettings />
         }
     }

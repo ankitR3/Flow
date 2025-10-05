@@ -7,12 +7,12 @@ import { FiPlus, FiLogOut } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import { MdGroups } from 'react-icons/md';
 import { TbSettings2 } from 'react-icons/tb';
-import { useDashboardNavStore } from '@/src/store/useDashboardNavStore';
-import { DashboardNavEnum } from '@/src/types/DashboardNavEnum';
+import { useDashboardRendererStore } from '@/src/store/useDashboardRendererStore';
+import { DashboardRendererEnum } from '@/src/types/DashboardRendererEnum';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardLeft() {
-    const { value, setValue } = useDashboardNavStore();
+    const { value, setValue } = useDashboardRendererStore();
 
     const handleLogout = () => {
         // Add your logout logic here
@@ -25,36 +25,36 @@ export default function DashboardLeft() {
                 <NavButton 
                     title='Home'
                     logo={<BiHome />}
-                    setState={() => setValue(DashboardNavEnum.HOME)}
-                    isActive={value === DashboardNavEnum.HOME}
+                    setState={() => setValue(DashboardRendererEnum.HOME)}
+                    isActive={value === DashboardRendererEnum.HOME}
                 />
 
                 <NavButton 
                     title='Create Room'
                     logo={<FiPlus />}
-                    setState={() => setValue(DashboardNavEnum.CREATE_ROOM)}
-                    isActive={value === DashboardNavEnum.CREATE_ROOM}
+                    setState={() => setValue(DashboardRendererEnum.CREATE_ROOM)}
+                    isActive={value === DashboardRendererEnum.CREATE_ROOM}
                 />
 
                 <NavButton 
                     title='My Rooms'
                     logo={<MdGroups />}
-                    setState={() => setValue(DashboardNavEnum.MY_ROOMS)}
-                    isActive={value === DashboardNavEnum.MY_ROOMS}
+                    setState={() => setValue(DashboardRendererEnum.MY_ROOMS)}
+                    isActive={value === DashboardRendererEnum.MY_ROOMS}
                 />
 
                 <NavButton 
                     title='Profile'
                     logo={<CgProfile />}
-                    setState={() => setValue(DashboardNavEnum.PROFILE)}
-                    isActive={value === DashboardNavEnum.PROFILE}
+                    setState={() => setValue(DashboardRendererEnum.PROFILE)}
+                    isActive={value === DashboardRendererEnum.PROFILE}
                 />
 
                 <NavButton 
                     title='Settings'
                     logo={<TbSettings2 />}
-                    setState={() => setValue(DashboardNavEnum.SETTINGS)}
-                    isActive={value === DashboardNavEnum.SETTINGS}
+                    setState={() => setValue(DashboardRendererEnum.SETTINGS)}
+                    isActive={value === DashboardRendererEnum.SETTINGS}
                 />
             </div>
         </div>

@@ -8,7 +8,6 @@ interface ThemeState {
     setTheme: (theme: ThemeType) => void;
 }
 
-// Zustand store
 export const useThemeStore = create<ThemeState>((set) => ({
     theme: 'system',
     setTheme: (theme) => {
@@ -16,7 +15,6 @@ export const useThemeStore = create<ThemeState>((set) => ({
     },
 }));
 
-// Hook to sync DOM with Zustand store
 export const useThemeMode = () => {
     const { theme, setTheme } = useThemeStore();
 
@@ -29,7 +27,7 @@ export const useThemeMode = () => {
         } else {
             setTheme('system');
             if (prefersDark) {
-                document.documentElement.classList.add('dark');
+                document.documentElement.classList.add('dark')
             }
         }
     }, [setTheme]);
