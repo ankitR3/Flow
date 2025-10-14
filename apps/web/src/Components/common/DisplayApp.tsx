@@ -18,7 +18,7 @@ export default function DisplayApp() {
     const router = useRouter();
     const { session } = useUserSessionStore();
     const [opensignInModal, setOpenSignInModal] = useState<boolean>(false);
-    const {theme} = useTheme();
+    const { theme } = useTheme();
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -82,7 +82,7 @@ export default function DisplayApp() {
     }
 
     return (
-        <div ref={containerRef} className="w-full h-[415px] rounded-3xl overflow-hidden relative">
+        <div ref={containerRef} className="w-full min-h-[415px] rounded-3xl overflow-visible relative">
             <div className="w-full h-full flex p-4 gap-x-3">
                 <div className="w-[70%] h-full flex flex-col rounded-3xl p-4 relative overflow-hidden">
                     <span ref={titleRef} className={`text-[80px] font-mono leading-24 ${theme == "dark" ? "text-white" : "text-neutral-900"} py-14`}>

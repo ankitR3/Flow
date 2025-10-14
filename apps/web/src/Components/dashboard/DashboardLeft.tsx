@@ -20,14 +20,14 @@ export default function DashboardLeft() {
     };
 
     return (
-        <div className='h-[90%] w-[16%] border rounded-3xl flex flex-col justify-between p-4'>
+        <div className='h-[90%] w-[15%] flex flex-col justify-between p-4 bg-white dark:bg-neutral-800 font-sans text-white dark:text-black rounded-md'>
             <div className='space-y-3'>
-                <NavButton 
+                {/* <NavButton 
                     title='Home'
                     logo={<BiHome />}
                     setState={() => setValue(DashboardRendererEnum.HOME)}
                     isActive={value === DashboardRendererEnum.HOME}
-                />
+                /> */}
 
                 <NavButton 
                     title='Create Room'
