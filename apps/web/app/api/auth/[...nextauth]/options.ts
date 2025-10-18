@@ -22,6 +22,11 @@ export const authOptions: AuthOptions = {
     pages: {
         signIn: '/',
     },
+
+    secret: process.env.NEXTAUTH_SECRET,
+
+    debug: process.env.NODE_ENV === 'development',
+
     callbacks: {
         async signIn({ user, account }: { user: UserType; account: Account | null}) {
             try {
@@ -31,6 +36,8 @@ export const authOptions: AuthOptions = {
                     const response = await axios.post(`${SIGNIN_URL}`, {
                         user,
                         account
+                    }, {
+                        timeout: 10000,
                     });
 
                     const result = response.data;
@@ -46,6 +53,23 @@ export const authOptions: AuthOptions = {
                 return false;
             }
         },
+
+        async redirect({ url, baseUrl }) {
+
+            if (url === baseUrl || url === '/' || url.includes('api/auth')) {
+                return `${baseUrl}/dashboard`;
+            }
+
+            if (url.startsWith('/')) {
+                return `${baseUrl}${url}`;
+            }
+
+            if (new URL(url).origin === baseUrl) {
+                return url;
+            }
+            return baseUrl;
+        },
+
         async jwt({ token, user }) {
             if (user) {
                 token.user = user as UserType;
@@ -63,6 +87,11 @@ export const authOptions: AuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+
+            httpOptions: {
+                timeout: 10000,
+            },
+
             authorization: {
                 params: {
                     prompt: 'consent',

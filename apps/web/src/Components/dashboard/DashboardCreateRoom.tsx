@@ -15,23 +15,6 @@ export default function DashboardCreateRoom() {
     const { session, isLoading, setSession } = useUserSessionStore();
     const { subscribe } = useWebSocket();
 
-    // useEffect(() => {
-    //     // Temporary mock session for testing
-    //     const mockSession = {
-    //         user: {
-    //             id: 'test-user-id',
-    //             name: 'Test User',
-    //             email: 'test@example.com',
-    //             token: 'mock-token'
-    //         },
-    //         expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
-    //     };
-        
-    //     setSession(mockSession);
-    // }, [setSession]);
-
-    // console.log('Session state:', { session, isLoading });
-
     const [formData, setFormData] = useState({
         name: '',
         description: '',

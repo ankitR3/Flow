@@ -1,7 +1,7 @@
 'use client'
 
 import HeadingCard from './HeadingCard';
-import NavButton from '../navbars/NavButton';
+import DashboardButton from './DashboardButton';
 import { BiHome } from 'react-icons/bi';
 import { FiPlus, FiLogOut } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
@@ -29,28 +29,28 @@ export default function DashboardLeft() {
                     isActive={value === DashboardRendererEnum.HOME}
                 /> */}
 
-                <NavButton 
+                <DashboardButton 
                     title='Create Room'
                     logo={<FiPlus />}
                     setState={() => setValue(DashboardRendererEnum.CREATE_ROOM)}
                     isActive={value === DashboardRendererEnum.CREATE_ROOM}
                 />
 
-                <NavButton 
+                <DashboardButton 
                     title='My Rooms'
                     logo={<MdGroups />}
                     setState={() => setValue(DashboardRendererEnum.MY_ROOMS)}
                     isActive={value === DashboardRendererEnum.MY_ROOMS}
                 />
 
-                <NavButton 
+                <DashboardButton 
                     title='Profile'
                     logo={<CgProfile />}
                     setState={() => setValue(DashboardRendererEnum.PROFILE)}
                     isActive={value === DashboardRendererEnum.PROFILE}
                 />
 
-                <NavButton 
+                <DashboardButton 
                     title='Settings'
                     logo={<TbSettings2 />}
                     setState={() => setValue(DashboardRendererEnum.SETTINGS)}
