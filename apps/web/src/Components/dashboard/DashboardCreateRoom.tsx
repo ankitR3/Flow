@@ -67,7 +67,7 @@ export default function DashboardCreateRoom() {
         return (
             <div className='h-full w-full flex justify-center items-center p-4'>
                 <Card className='w-full max-w-md p-6 text-center'>
-                    <p className='text-muted-foregroud'>Loading session...</p>
+                    <p className='text-muted-foreground'>Loading session...</p>
                 </Card>
             </div>
         );
@@ -80,8 +80,8 @@ export default function DashboardCreateRoom() {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Create a Room</CardTitle>
-                                <CardDescription className="mt-2 mb-5">
+                                <CardTitle className='bg-dark text-black dark:text-neutral-200'>Create a Room</CardTitle>
+                                <CardDescription className="mt-2 mb-5 bg-dark text-black dark:text-neutral-200">
                                     Enter details to create your own chat room
                                 </CardDescription>
                             </div>
@@ -100,8 +100,9 @@ export default function DashboardCreateRoom() {
 
                     <CardContent className="space-y-5">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Room Name</Label>
+                            <Label className='bg-dark text-black dark:text-neutral-200' htmlFor="name">Room Name</Label>
                             <Input
+                                className='bg-dark text-black dark:text-dark'
                                 id="name"
                                 name="name"
                                 value={formData.name}
@@ -112,8 +113,9 @@ export default function DashboardCreateRoom() {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label className='bg-dark text-black dark:text-neutral-200' htmlFor="description">Description</Label>
                             <Input
+                                className='bg-dark text-black dark:text-dark'
                                 id="description"
                                 name="description"
                                 value={formData.description}
@@ -124,8 +126,9 @@ export default function DashboardCreateRoom() {
 
                         {formData.isPrivate && (
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label className='bg-dark text-black dark:text-neutral-200' htmlFor="password">Password</Label>
                                 <Input
+                                    className='bg-dark text-black dark:text-dark'
                                     id="password"
                                     name="password"
                                     type="password"
@@ -140,10 +143,10 @@ export default function DashboardCreateRoom() {
 
                     <CardFooter className="mt-6 justify-center">
                         <Button
-                            className="font-sans font-light text-md hover:-translate-y-0.5"
+                            className="font-sans font-light text-md hover:-translate-y-0.5 bg-neutral-200 text-black dark:text-dark"
                             type="submit"
                         >
-                            <span className="px-2">Create Room</span>
+                            <span className="px-2 bg-neutral-200">Create Room</span>
                         </Button>
                     </CardFooter>
                 </form>

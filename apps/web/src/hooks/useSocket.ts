@@ -27,7 +27,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketRet
     const clientRef = useRef<WebSocketClient | null>(null);
 
     useEffect(() => {
-        console.log('inside socket');
+        // console.log('inside socket');
         if (url && !clientRef.current) {
             clientRef.current = getWebSocketClient(url);
         } else if (!url && !clientRef.current) {
@@ -38,7 +38,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketRet
             }
         }
 
-        console.log('ws connected');
+        // console.log('ws connected');
     }, [url]);
 
     useEffect(() => {

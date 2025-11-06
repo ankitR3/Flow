@@ -24,7 +24,7 @@ export default function DashboardSettings() {
                     <TooltipComponent content="Choose your preferred theme">
                         <Button
                             variant={"outline"}
-                            className="border-none bg-neutral-200 text-black dark:text-white shadow-none text-[17px]"
+                            className="border-none bg-dark text-black dark:text-neutral-200 shadow-none text-[17px]"
                             onClick={() => setValue(SettingsRendererEnum.CHANGE_THEME)}
                         >
                             Theme
@@ -34,7 +34,7 @@ export default function DashboardSettings() {
                     <TooltipComponent content="View Account details">
                         <Button
                             variant={"outline"}
-                            className="border-none bg-neutral-200 text-black dark:text-white shadow-none text-[17px]"
+                            className="border-none bg-dark text-black dark:text-neutral-200 shadow-none text-[17px]"
                             onClick={() => setValue(SettingsRendererEnum.ACCOUNT_INFO)}
                         >
                             Account Info

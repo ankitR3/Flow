@@ -31,11 +31,11 @@ class WebSocketClass {
             const socketMessage: SocketType = JSON.parse(message);
 
             switch (socketMessage.type) {
-                case MessageType.CONNECT:
-                    return this.handleConnect(socketMessage, socket);
+                case MessageType.SUBSCRIBE:
+                    return this.handleSubscribe(socketMessage, socket);
                 
-                case MessageType.DISCONNECT:
-                    return this.handleDisconnect(socketMessage, socket);
+                case MessageType.UNSUBSCRIBE:
+                    return this.handleUnsubscribe(socketMessage, socket);
 
                 case MessageType.CHAT:
                     return this.handleChat(socketMessage, socket);
@@ -60,11 +60,11 @@ class WebSocketClass {
         }
     }
 
-    private handleConnect(
-        connect: Extract<SocketType, { type: MessageType.CONNECT }>, socket: WebSocket
+    private handleSubscribe(
+        subscribe: Extract<SocketType, { type: MessageType.SUBSCRIBE }>, socket: WebSocket
     ) {
         try {
-            const { roomId, payload } = connect;
+            const { roomId, payload } = subscribe;
             if (!roomId) {
                 console.log('room-id not found');
                 return;
@@ -75,17 +75,23 @@ class WebSocketClass {
             }
             this.wsConnection.get(roomId)?.add(socket);
 
-            console.log(`User ${payload.userId} connected to room ${roomId}`);
+            console.log(`User ${payload.userId} subscribed to room ${roomId}`);
+
+            socket.send(JSON.stringify({
+                type: 'SUBSCRIBED',
+                roomId,
+                success: true
+            }));
         } catch (err) {
             console.log('room-join error: ', err);
         }
     }
 
-    private handleDisconnect(
-        disconnect: Extract<SocketType, { type: MessageType.DISCONNECT}>, socket: WebSocket
+    private handleUnsubscribe(
+        unsubscribe: Extract<SocketType, { type: MessageType.UNSUBSCRIBE}>, socket: WebSocket
     ) {
         try {
-            const { roomId } = disconnect;
+            const { roomId } = unsubscribe;
             if (!roomId) {
                 console.log('room-id not found');
                 return;
@@ -102,7 +108,13 @@ class WebSocketClass {
                 this.wsConnection.delete(roomId);
             }
 
-            console.log(`User disconnected from the room ${roomId}`)
+            console.log(`User disconnected from the room ${roomId}`);
+
+            socket.send(JSON.stringify({
+                type: 'UNSUBSCRIBED',
+                roomId,
+                success: true
+            }));
         } catch (err) {
             console.log('room disconnection failed: ', err);
         }

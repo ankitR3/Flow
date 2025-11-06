@@ -13,7 +13,7 @@ export default async function Layout({ children }: LayoutProps) {
 
     return (
         <div>
-            <WebSocketProvider url={process.env.NEXTAUTH_URL!}>
+            <WebSocketProvider>
                 {children}
                 <SessionProvider session={session} />
             </WebSocketProvider>

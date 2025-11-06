@@ -8,6 +8,7 @@ import { Lock, DoorOpen } from "lucide-react";
 import { useUserSessionStore } from "../store/useUserSessionStore";
 import { useState } from "react";
 import { GET_ROOM_CHECK_URL, JOIN_ROOM_URL } from "@/routes/api-routes";
+import { useWebSocket } from "../hooks/useSocket";
 
 interface JoinCardProps {
     onCancel: () => void;
@@ -17,6 +18,7 @@ interface JoinCardProps {
 export default function JoinCard({ onCancel, onJoinSuccess }: JoinCardProps) {
 
     const { session } = useUserSessionStore();
+    const { subscribe } = useWebSocket();
 
     const [roomId, setRoomId] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -77,6 +79,9 @@ export default function JoinCard({ onCancel, onJoinSuccess }: JoinCardProps) {
                     },
                 }
             );
+
+            subscribe(roomId, userId);
+            console.log(`Subscribe to room ${roomId}`);
 
             onJoinSuccess();
 

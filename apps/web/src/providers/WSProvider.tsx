@@ -7,11 +7,10 @@ const WebSocketContext = createContext<UseWebSocketReturn | null>(null);
 
 interface WebSocketProviderProps {
     children: React.ReactNode,
-    url: string
 }
 
-export const WebSocketProvider = ({ children, url }: WebSocketProviderProps) => {
-    const socket = useWebSocket({ url, autoConnect: true });
+export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
+    const socket = useWebSocket({ autoConnect: true });
 
     return (
         <WebSocketContext.Provider value={socket}>

@@ -1,7 +1,7 @@
 export enum MessageType {
     CHAT = "CHAT",
-    CONNECT = "CONNECT",
-    DISCONNECT = "DISCONNECT",
+    SUBSCRIBE = "SUBSCRIBE",
+    UNSUBSCRIBE = "UNSUBSCRIBE",
     ROOM_CREATED = "ROOM_CREATED",
     ROOM_DELETED = "ROOM_DELETED",
     ROOM_JOINED = "ROOM_JOINED",
@@ -45,12 +45,12 @@ export type SocketType =
         payload: Chat;
     }
     | {
-        type: MessageType.CONNECT;
+        type: MessageType.SUBSCRIBE;
         roomId: string;
         payload: Connect;
     }
     | {
-        type: MessageType.DISCONNECT
+        type: MessageType.UNSUBSCRIBE
         roomId: string;
     }
     | {

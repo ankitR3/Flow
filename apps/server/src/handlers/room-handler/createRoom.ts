@@ -38,7 +38,7 @@ export default async function createRoom(req: Request, res: Response) {
         });
     } catch (err) {
         console.log('Create Room Error: ', err);
-        res.send(500).json({
+        res.status(500).json({
             success: false,
             message: 'Room creation failed'
         });

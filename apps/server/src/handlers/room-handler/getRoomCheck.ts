@@ -2,9 +2,9 @@ import prisma from '@repo/db';
 import { Request, Response } from 'express';
 
 export default async function getRoomCheck(req: Request, res: Response) {
-    const { roomId } = req.params;
+    const { id } = req.params;
 
-    if (!roomId) {
+    if (!id) {
         res.status(400).json({
             message: 'roomId not found'
         });
@@ -13,7 +13,7 @@ export default async function getRoomCheck(req: Request, res: Response) {
 
     try {
         const room = await prisma.room.findUnique({
-            where: { id: String(roomId) },
+            where: { id: String(id) },
             select: {
                 id: true,
                 name: true,

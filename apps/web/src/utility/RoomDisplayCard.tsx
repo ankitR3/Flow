@@ -40,8 +40,7 @@ export default function RoomDisplayCard() {
     const [showJoinPanel, setShowJoinPanel] = useState<boolean>(false);
     const [inputRoomId, setInputRoomId] = useState<string>("");
     const [roomCheckError, setRoomCheckError] = useState<string | null>(null);
-    const [selectedRoom, setSelectedRoom] = useState(null);
-        useState<RoomCheckResponse["room"] | null>(null);
+    const [selectedRoom, setSelectedRoom] = useState<RoomCheckResponse["room"] | null>(null);
     const [showJoinModal, setShowJoinModal] = useState(false);
 
     useEffect(() => {
@@ -63,8 +62,8 @@ export default function RoomDisplayCard() {
                         !ownedRooms.some((owned: Room) => owned.id === joinedRoom.id)
                 );
 
-                setOwnedRooms(ownedRooms);
-                setJoinedRooms(filteredJoinedRooms);
+                setOwnedRooms(ownedRooms || []);
+                setJoinedRooms(filteredJoinedRooms || []);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
             } finally {
@@ -89,7 +88,7 @@ export default function RoomDisplayCard() {
         setRoomCheckError(null);
     };
 
-    const allRooms = [...ownedRooms, ...joinedRooms];
+    const allRooms = [...(ownedRooms ?? []), ...(joinedRooms ?? [])];
 
     return (
         <div className="w-full mx-auto flex flex-col h-[600px]">
@@ -101,8 +100,7 @@ export default function RoomDisplayCard() {
                         setInputRoomId("");
                         setRoomCheckError(null);
                     }}
-                    className="cursor-pointer font-mono flex items-center justify-between border dark:border-[#3593b8] bg-[#00161a] rounded-xl p-4 hover:bg-[#00161ad8] transition"
-                >
+                    className="cursor-pointer font-mono flex items-center justify-between border dark:border-[#3593b8] bg-[#00161a] rounded-xl p-4 hover:bg-[#00161ad8] transition">
                     <div onClick={handleJoinClick} className="w-full flex items-center justify-center gap-2">
                         <Plus className="w-5 h-5 dark:text-[#3593b8]" />
                         <span className="font-medium dark:text-[#3593b8]">JOIN A ROOM</span>
