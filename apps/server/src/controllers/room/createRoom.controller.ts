@@ -17,7 +17,7 @@ export default async function createRoomController(req: Request, res: Response) 
         });
     }
 
-    if (!isPrivate && !password) {
+    if (isPrivate && !password) {
         return res.status(400).json({
             message: 'password is required for private room'
         });

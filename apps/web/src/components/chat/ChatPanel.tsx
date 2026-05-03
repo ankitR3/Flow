@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { GET_ROOM_URL } from '@/routes/api-routes';
+import CreateRoom from '../room/CreateRoom';
 
 interface Room {
     id: string;
@@ -16,21 +17,25 @@ export default function ChatPanel() {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('All');
-
+    
+    async function fetchRooms() {
+        if (!session) return;
+        // console.log('token:', (session as any).user?.token);
+        const res = await fetch(GET_ROOM_URL, {
+            headers: {
+                Authorization: `Bearer ${(session as any).user?.token}`,
+                'user-id': (session as any).user?.id ?? '',
+            }
+        });
+        const data = await res.json();
+        // console.log('API response:', data);
+        setRooms(Array.isArray(data) ? data : data.rooms ?? data.data ?? []);
+    }
+    
     useEffect(() => {
-        async function fetchRooms() {
-            if (!session) return;
-            const res = await fetch(GET_ROOM_URL, {
-                headers: {
-                    Authorization: `Bearer ${(session as any).accessToken}`,
-                }
-            });
-            const data = await res.json();
-            setRooms(data);
-        }
         fetchRooms();
     }, [session]);
-
+    
     const filtered = rooms.filter((room) =>
         room.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -40,7 +45,10 @@ export default function ChatPanel() {
 
             {/* Header */}
             <div className='px-4 py-4 border-gray-200'>
-                <h2 className='text-xl font-semibold text-gray-900 mb-3'>Chats</h2>
+                <div className='flex items-center justify-between mb-3'>
+                    <h2 className='text-xl font-semibold text-gray-900 mb-3'>Chats</h2>
+                    <CreateRoom onRoomCreated={fetchRooms}/>
+                </div>
 
                 {/* Search bar */}
                 <div className='flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2'>
@@ -65,7 +73,7 @@ export default function ChatPanel() {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         suppressHydrationWarning
-                        className={`px-3 py-2 rounded-full text-xs font-medium transition-all
+                        className={`px-3 py-2 rounded-full text-xs font-medium transition-all hover:cursor-pointer
                             ${activeTab === tab
                                 ? 'bg-gray-900 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
