@@ -3,12 +3,14 @@
 import { signOut, signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
+import { disconnectSocket } from '@/src/hooks/useSocket';
 
 export default function LogInButton() {
     const { data:session, status } = useSession();
     const router = useRouter();
 
     const handleLogout = async () => {
+        disconnectSocket();
         await signOut({ redirect: false });
         router.replace('/');
     }
@@ -23,7 +25,7 @@ export default function LogInButton() {
 
     if (session?.user) {
         return (
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-1'>
                 <div className='flex items-center gap-2'>
                     {session.user.image && (
                         <img
@@ -32,10 +34,11 @@ export default function LogInButton() {
                             className='w-8 h-8 rounded-full'
                         />
                     )}
-                    <span className='text-foreground'>{session.user.email}</span>
+                    {/* <span className='text-foreground'>{session.user.email}</span> */}
                 </div>
                 <Button
                     onClick={handleLogout}
+                    className='text-black'
                 >
                     Sign Out
                 </Button>

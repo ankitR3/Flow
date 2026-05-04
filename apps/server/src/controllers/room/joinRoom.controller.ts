@@ -3,19 +3,27 @@ import prisma from '@repo/db';
 import bcrypt from 'bcryptjs';
 
 export default async function joinRoomController(req: Request, res: Response) {
-    const { userId, roomId, password } = req.body;
+    const { userId, roomId, code } = req.body;
 
-    if (!roomId || !userId) {
+    if (!userId) {
         return res.status(400).json({
-            message: 'user_id and room_id are required'
+            message: 'user_id is required'
+        });
+    }
+
+    if (!code && !roomId) {
+        return res.status(400).json({
+            message: 'code or roomId is required'
         });
     }
 
     try {
         const existingRoom = await prisma.room.findUnique({
-            where: {
+            where: code ? {
+                code
+            } : {
                 id: roomId
-            },
+            }
         });
 
         if (!existingRoom) {
@@ -24,19 +32,10 @@ export default async function joinRoomController(req: Request, res: Response) {
             });
         }
 
-        if (existingRoom.isPrivate) {
-            const isPasswordValid = await bcrypt.compare(password || '', existingRoom.password || '');
-            if (!isPasswordValid) {
-                return res.status(401).json({
-                    message: 'Invalid password'
-                });
-            }
-        }
-
         const alreadyJoined = await prisma.roomMember.findFirst({
             where: {
                 userId,
-                roomId
+                roomId: existingRoom.id
             },
         });
 
@@ -55,7 +54,7 @@ export default async function joinRoomController(req: Request, res: Response) {
                 },
                 room: {
                     connect: {
-                        id: roomId
+                        id: existingRoom.id
                     }
                 },
                 role: 'MEMBER',

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import prisma from '@repo/db';
-import bcrypt from 'bcryptjs';
+import { nanoid } from 'nanoid';
 
 export default async function createRoomController(req: Request, res: Response) {
-    const { userId, name, description, isPrivate, password } = req.body;
+    const { userId, name, description, isPrivate } = req.body;
 
     if (!userId) {
         return res.status(401).json({
@@ -17,20 +17,14 @@ export default async function createRoomController(req: Request, res: Response) 
         });
     }
 
-    if (isPrivate && !password) {
-        return res.status(400).json({
-            message: 'password is required for private room'
-        });
-    }
-
     try {
-        const hashedPassword = isPrivate && password ? await bcrypt.hash(password, 10): null;
+        const code = nanoid(6).toUpperCase();
         const room = await prisma.room.create({
             data: {
                 name,
                 description,
                 isPrivate,
-                password: hashedPassword,
+                code,
                 owner: {
                     connect: {
                         id: userId

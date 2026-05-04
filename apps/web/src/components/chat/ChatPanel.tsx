@@ -1,40 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { GET_ROOM_URL } from '@/routes/api-routes';
+import { useState } from 'react';
 import CreateRoom from '../room/CreateRoom';
-
-interface Room {
-    id: string;
-    name: string;
-    lastMessage?: string;
-    updatedAt?: string;
-}
+import { useRooms } from '../room/GetRooms';
+import { useDashboardStore } from '@/src/store/useDashboardStore';
 
 export default function ChatPanel() {
-    const { data: session } = useSession();
-    const [rooms, setRooms] = useState<Room[]>([]);
+    const { rooms, fetchRooms } = useRooms()
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('All');
-    
-    async function fetchRooms() {
-        if (!session) return;
-        // console.log('token:', (session as any).user?.token);
-        const res = await fetch(GET_ROOM_URL, {
-            headers: {
-                Authorization: `Bearer ${(session as any).user?.token}`,
-                'user-id': (session as any).user?.id ?? '',
-            }
-        });
-        const data = await res.json();
-        // console.log('API response:', data);
-        setRooms(Array.isArray(data) ? data : data.rooms ?? data.data ?? []);
-    }
-    
-    useEffect(() => {
-        fetchRooms();
-    }, [session]);
+    const { setSelectedRoom } = useDashboardStore();
     
     const filtered = rooms.filter((room) =>
         room.name.toLowerCase().includes(search.toLowerCase())
@@ -45,8 +20,8 @@ export default function ChatPanel() {
 
             {/* Header */}
             <div className='px-4 py-4 border-gray-200'>
-                <div className='flex items-center justify-between mb-3'>
-                    <h2 className='text-xl font-semibold text-gray-900 mb-3'>Chats</h2>
+                <div className='flex items-center justify-between'>
+                    <h2 className='text-xl font-semibold text-gray-900 mb-1 py-3'>Chats</h2>
                     <CreateRoom onRoomCreated={fetchRooms}/>
                 </div>
 
@@ -95,6 +70,7 @@ export default function ChatPanel() {
                     filtered.map((room) => (
                         <div
                             key={room.id}
+                            onClick={() => setSelectedRoom(room)}
                             className='flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-all'
                         >
                             {/* Avatar */}
