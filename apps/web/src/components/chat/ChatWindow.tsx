@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSocket } from '@/src/hooks/useSocket';
 import { MessageType } from '@/src/types/socket.types';
@@ -31,14 +31,15 @@ export default function ChatWindow({ room }: ChatWindowProps) {
 
     const userId = (session as any)?.user?.id ?? '';
 
+    const handleMessage = useCallback((data: any) => {
+        if (data.type === MessageType.CHAT) {
+            setMessages((prev) => [...prev, data.payload]);
+        }
+    }, []);
     const { sendMessage } = useSocket({
         roomId: room.id,
         userId,
-        onMessage: (data) => {
-            if (data.type === MessageType.CHAT) {
-                setMessages((prev) => [...prev, data.payload]);
-            }
-        }
+        onMessage: handleMessage,
     });
 
     function copyCode() {
@@ -56,6 +57,10 @@ export default function ChatWindow({ room }: ChatWindowProps) {
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') handleSend();
     }
+
+    useEffect(() => {
+        console.log('ChatWindow rendered');
+    });
 
     return (
         <div className='flex-1 flex flex-col bg-white'>

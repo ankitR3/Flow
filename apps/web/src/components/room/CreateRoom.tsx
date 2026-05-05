@@ -53,10 +53,11 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomProps) {
         }}>
             <DialogTrigger asChild>
                 <Button
-                    className='p-2 rounded-full hover:bg-gray-100 transition-all'
+                    variant='ghost'
+                    className='p-2 rounded-full'
                     title='New room'
                 >
-                    <PlusIcon className='w-5 h-5 text-gray-600'/>
+                    <PlusIcon className='w-5 h-5'/>
                 </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-sm bg-white'>
@@ -80,7 +81,7 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomProps) {
                             placeholder='e.g. General, Design, Team...'
                             value={roomName}
                             onChange={(e) => setRoomName(e.target.value)}
-                            className='text-gray-900 placeholder:text-gray-400'
+                            className='text-black placeholder:text-gray-400'
                         />
                     </div>
                 )}
@@ -94,7 +95,10 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomProps) {
                             <DialogClose asChild>
                                 <Button variant='outline'>Cancel</Button>
                             </DialogClose>
-                            <Button variant='default' onClick={handleCreateRoom} disabled={loading}>
+                            <Button
+                            onClick={handleCreateRoom}
+                            disabled={loading}
+                            >
                                 {loading ? 'Creating...' : 'Create'}
                             </Button>
                         </>

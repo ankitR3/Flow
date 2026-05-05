@@ -8,6 +8,7 @@ class SocketManager {
 
     static connect(): WebSocket {
         if (!this.instance || this.instance.readyState == WebSocket.CLOSED) {
+            console.log('creating new socket connection');
             this.instance = new WebSocket(SOCKET_URL);
         }
         return this.instance;
@@ -33,6 +34,11 @@ interface UseSocketProps {
 
 export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
     const socketRef = useRef<WebSocket | null>(null);
+    const onMessageRef = useRef(onMessage);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage;
+    }, [onMessage]);
 
     const sendMessage = useCallback((message: string) => {
         const socket = socketRef.current;
@@ -80,7 +86,7 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
         const handleMessage = (event: MessageEvent) => {
             try {
                 const data = JSON.parse(event.data);
-                onMessage(data);
+                onMessageRef.current(data);
             } catch (err) {
                 console.log('Failed to parse message: ', err);
             }

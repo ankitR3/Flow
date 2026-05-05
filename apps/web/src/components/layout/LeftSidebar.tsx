@@ -31,9 +31,9 @@ export default function leftSidebar() {
                     const active = activeTab == item.value;
                     return (
                        <div
-                        key={item.value}
-                        onClick={() => handleTabChange(item.value)}
-                        className={`flex items-center p-3 rounded-3xl cursor-pointer transition-all
+                            key={item.value}
+                            onClick={() => handleTabChange(item.value)}
+                            className={`flex items-center p-3 rounded-3xl cursor-pointer transition-all
                                 ${active
                                     ? 'bg-gray-200 text-gray-900 font-medium'
                                     : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -46,16 +46,16 @@ export default function leftSidebar() {
                 })}
             </nav>
 
-            <div>
+            <div className='mt-auto'>
                 {session?.user?.image && (
                     <img
                         src={session.user.image}
                         alt='Profile'
                         title={session.user.name ?? 'Profile'}
                         onClick={() => handleTabChange(DashboardEnum.SETTINGS)}
-                        className={`w-10 h-10 rounded-full cursor-pointer transition-all
+                        className={`w-10 h-10 rounded-full cursor-pointer transition-all mt-auto
                             ${activeTab === DashboardEnum.SETTINGS
-                                ? 'ring ring-gray-900'
+                                ? 'ring-2 ring-gray-900'
                                 : 'hover:ring-2 hover:ring-gray-300'
                             }
                         `}

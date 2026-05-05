@@ -37,8 +37,8 @@ export default function LogInButton() {
                     {/* <span className='text-foreground'>{session.user.email}</span> */}
                 </div>
                 <Button
+                variant='ghost'
                     onClick={handleLogout}
-                    className='text-black'
                 >
                     Sign Out
                 </Button>
@@ -47,8 +47,8 @@ export default function LogInButton() {
     }
 
     return (
-        <button onClick={() => signIn('google', { callbackUrl: '/dashboard'})}
-            className='bg-primary text-black hover:bg-gray-900 hover:text-white transition px-6 py-3 rounded-lg text-primary-foreground font-semibold flex items-center gap-2 hover:cursor-pointer'
+        <Button onClick={() => signIn('google', { callbackUrl: '/dashboard'})}
+            variant='ghost'
         >
             <svg className='w-5 h-5' viewBox='0 0 24 24'>
                 <path
@@ -69,6 +69,6 @@ export default function LogInButton() {
                 />
             </svg>
             Sign In with Google
-        </button>
+        </Button>
     )
 }

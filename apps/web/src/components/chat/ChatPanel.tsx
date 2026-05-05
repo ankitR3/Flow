@@ -4,12 +4,24 @@ import { useState } from 'react';
 import CreateRoom from '../room/CreateRoom';
 import { useRooms } from '../room/GetRooms';
 import { useDashboardStore } from '@/src/store/useDashboardStore';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { disconnectSocket } from '@/src/hooks/useSocket';
 
 export default function ChatPanel() {
     const { rooms, fetchRooms } = useRooms()
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('All');
     const { setSelectedRoom } = useDashboardStore();
+    const router = useRouter();
+
+    async function handleLogout() {
+        disconnectSocket();
+        await signOut({ redirect: false });
+        router.replace('/');
+    }
     
     const filtered = rooms.filter((room) =>
         room.name.toLowerCase().includes(search.toLowerCase())
@@ -21,8 +33,25 @@ export default function ChatPanel() {
             {/* Header */}
             <div className='px-4 py-4 border-gray-200'>
                 <div className='flex items-center justify-between'>
-                    <h2 className='text-xl font-semibold text-gray-900 mb-1 py-3'>Chats</h2>
-                    <CreateRoom onRoomCreated={fetchRooms}/>
+                    <h2 className='text-xl font-semibold text-gray-900 py-3'>Chats</h2>
+                    <div className='flex items-center gap-1'>
+                        <CreateRoom onRoomCreated={fetchRooms}/>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className='p-2 rounded-full hover:bg-gray-100 transition-all'>
+                                    <EllipsisVerticalIcon className='w-5 h-5 text-gray-600'/>
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-40 bg-white' align='end'>
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className='text-red-500 hover:text-red-600 cursor-pointer'
+                                >
+                                    Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
 
                 {/* Search bar */}
