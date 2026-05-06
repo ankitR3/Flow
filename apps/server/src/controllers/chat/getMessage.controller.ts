@@ -31,7 +31,7 @@ export default async function getMessageController(req: Request, res: Response) 
         });
 
         return res.status(200).json({
-            messsages: message,
+            messages: message,
             message: 'fetched message successfully'
         });
     } catch (err) {

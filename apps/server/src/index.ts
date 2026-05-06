@@ -23,7 +23,7 @@ app.use(cors({
 
 app.use('/api/v1/room', roomRouter);
 app.use('/api/v1/auth', authRouter);
-app.use('api/v1/chat', chatRouter);
+app.use('/api/v1/chat', chatRouter);
 
 const server = http.createServer(app);
 new WebSocketClass(server);

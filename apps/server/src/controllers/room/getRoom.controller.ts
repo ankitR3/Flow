@@ -22,6 +22,12 @@ export default async function getRoomController(req: Request, res: Response) {
                         user: true
                     },
                 },
+                message: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1,
+                },
             },
         });
 
@@ -37,6 +43,12 @@ export default async function getRoomController(req: Request, res: Response) {
                             include: {
                                 user: true,
                             },
+                        },
+                        message: {
+                            orderBy: {
+                                createdAt: 'desc'
+                            },
+                            take: 1,
                         },
                     },
                 },

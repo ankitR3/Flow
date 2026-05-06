@@ -1,33 +1,38 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSocket } from '@/src/hooks/useSocket';
 import { MessageType } from '@/src/types/socket.types';
+import { useMessages } from '@/src/hooks/useMessages';
+import { useSendMessage } from '@/src/hooks/useSendMessage';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { Button } from '../ui/button';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import DeleteRoom from '../room/DeleteRoom';
+import { useDashboardStore } from '@/src/store/useDashboardStore';
 
 interface Room {
     id: string;
     name: string;
     code: string;
+    ownerId: string;
     lastMessage?: string;
     updatedAt?: string;
 }
 
-interface Message {
-    senderId: string;
-    message: string;
-    timestamp: string;
-}
-
 interface ChatWindowProps {
     room: Room;
+    onRoomDeleted: () => void;
 }
 
-export default function ChatWindow({ room }: ChatWindowProps) {
+export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const { data: session } = useSession();
+    const { messages, setMessages } = useMessages(room.id);
+    const { saveMessage } = useSendMessage(room.id);
     const [copied, setCopied] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
+    const { triggerRefresh } = useDashboardStore();
 
     const userId = (session as any)?.user?.id ?? '';
 
@@ -36,6 +41,7 @@ export default function ChatWindow({ room }: ChatWindowProps) {
             setMessages((prev) => [...prev, data.payload]);
         }
     }, []);
+
     const { sendMessage } = useSocket({
         roomId: room.id,
         userId,
@@ -48,19 +54,17 @@ export default function ChatWindow({ room }: ChatWindowProps) {
         setTimeout(() => setCopied(false), 2000);
     }
 
-    function handleSend() {
+    async function handleSend() {
         if (!input.trim()) return;
         sendMessage(input);
+        await saveMessage(input);
+        triggerRefresh();
         setInput('');
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') handleSend();
     }
-
-    useEffect(() => {
-        console.log('ChatWindow rendered');
-    });
 
     return (
         <div className='flex-1 flex flex-col bg-white'>
@@ -73,9 +77,7 @@ export default function ChatWindow({ room }: ChatWindowProps) {
                     <p className='text-sm font-medium text-gray-900'>{room.name}</p>
                     {/* Code with copy button */}
                     <div className='flex items-center gap-1'>
-                        <p className='text-xs text-gray-400 font-mono'>
-                            {room.code.slice(0, 3)}***
-                        </p>
+                        <p className='text-xs text-gray-400 font-mono'>{room.code.slice(0, 3)}***</p>
                         <button
                             onClick={copyCode}
                             title='Copy room code'
@@ -91,6 +93,21 @@ export default function ChatWindow({ room }: ChatWindowProps) {
                         )}
                     </div>
                 </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className='p-2 rounded-full hover:bg-gray-100 transition-all'>
+                            <EllipsisVerticalIcon className='w-5 h-5 text-gray-600' />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DeleteRoom
+                            roomId={room.id}
+                            roomName={room.name}
+                            ownerId={room.ownerId}
+                            onRoomDeleted={onRoomDeleted}
+                        />
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Messages area */}
@@ -124,7 +141,7 @@ export default function ChatWindow({ room }: ChatWindowProps) {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className='flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm outline-none placeholder:text-gray-400'
+                    className='flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm text-black outline-none placeholder:text-gray-400'
                 />
                 <button
                     onClick={handleSend}

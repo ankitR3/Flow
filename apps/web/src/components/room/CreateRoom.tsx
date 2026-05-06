@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import axios from 'axios';
 
 interface CreateRoomProps {
     onRoomCreated: () => void;
@@ -24,23 +25,24 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomProps) {
         if (!roomName.trim()) return;
         if (!session) return;
         setLoading(true);
-        const res = await fetch(CREATE_ROOM_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${(session as any).user?.token}`,
-            },
-            body: JSON.stringify({
+        try {
+            const res = await axios.post(CREATE_ROOM_URL, {
                 name: roomName,
                 userId: (session as any).user?.id,
                 isPrivate: false,
-            })
-        });
-        const data = await res.json();
-        setCode(data.room.code);
-        setRoomName('');
-        setLoading(false);
-        onRoomCreated();
+            }, {
+                headers: {
+                    Authorization: `Bearer ${(session as any).user?.token}`,
+                }
+            });
+            setCode(res.data.room.code);
+            setRoomName('');
+            onRoomCreated();
+        } catch (err) {
+            console.log('create room error: ', err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (

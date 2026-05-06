@@ -1,9 +1,10 @@
 'use client'
+
 import { useDashboardStore } from '@/src/store/useDashboardStore';
 import ChatWindow from '../chat/ChatWindow';
 
 export default function RightChatContent() {
-    const { selectedRoom } = useDashboardStore();
+    const { selectedRoom, setSelectedRoom } = useDashboardStore();
 
     if (!selectedRoom) {
         return (
@@ -13,5 +14,5 @@ export default function RightChatContent() {
         )
     }
 
-    return <ChatWindow room={selectedRoom} />
+    return <ChatWindow room={selectedRoom} onRoomDeleted={() => setSelectedRoom(null)}/>
 }

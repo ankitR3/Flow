@@ -6,6 +6,7 @@ import { JOIN_ROOM_URL } from '@/routes/api-routes';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import axios from 'axios';
 
 interface JoinRoomProps {
     onRoomJoined: () => void;
@@ -23,30 +24,28 @@ export default function JoinRoom({ onRoomJoined }: JoinRoomProps) {
         if (!session) return;
         setLoading(true);
         setError(null);
-
-        const res = await fetch(JOIN_ROOM_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${(session as any).user?.token}`,
-            },
-            body: JSON.stringify({
+        try {
+            const res = await axios.post(JOIN_ROOM_URL, {
                 code: code.toUpperCase(),
                 userId: (session as any).user?.id,
-            })
-        });
+            }, {
+                headers: {
+                    Authorization: `Bearer ${(session as any).user?.token}`,
+                }
+            });
 
-        const data = await res.json();
-
-        if (data.success) {
-            setSuccess(true);
-            setCode('');
-            onRoomJoined();
-        } else {
-            setError(data.message);
+            if (res.data.success) {
+                setSuccess(true);
+                setCode('');
+                onRoomJoined();
+            } else {
+                setError(res.data.message);
+            }
+        } catch {
+            setError('Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     }
 
     return (
