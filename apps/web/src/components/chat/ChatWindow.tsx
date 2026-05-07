@@ -32,19 +32,42 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const { saveMessage } = useSendMessage(room.id);
     const [copied, setCopied] = useState(false);
     const [input, setInput] = useState('');
-    const { triggerRefresh } = useDashboardStore();
+    const { triggerRefresh, updateRoomLastMessage } = useDashboardStore();
 
     const userId = (session as any)?.user?.id ?? '';
+    const username = (session as any)?.user?.name ?? 'someone';
 
     const handleMessage = useCallback((data: any) => {
         if (data.type === MessageType.CHAT) {
             setMessages((prev) => [...prev, data.payload]);
+            updateRoomLastMessage(room.id, data.payload.message);
         }
-    }, []);
+        if (data.type === MessageType.ROOM_JOINED) {
+            setMessages((prev) => [...prev, {
+                id: Date.now().toString(),
+                senderId: 'system',
+                message: `${data.payload.username} joined the room`,
+                timestamp: new Date().toISOString(),
+                type: 'system'
+            }]);
+            triggerRefresh();
+        }
+        if (data.type === MessageType.ROOM_EXIT) {
+            setMessages((prev) => [...prev, {
+                id: Date.now().toString(),
+                senderId: 'system',
+                message: `${data.payload.username} left the room`,
+                timestamp: new Date().toISOString(),
+                type: 'system'
+            }]);
+            triggerRefresh();
+        }
+    }, [triggerRefresh, updateRoomLastMessage]);
 
     const { sendMessage } = useSocket({
         roomId: room.id,
         userId,
+        username,
         onMessage: handleMessage,
     });
 
@@ -95,11 +118,11 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                 </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button className='p-2 rounded-full hover:bg-gray-100 transition-all'>
-                            <EllipsisVerticalIcon className='w-5 h-5 text-gray-600' />
+                        <Button variant='ghost' className='p-2 rounded-full hover:bg-gray-100 transition-all'>
+                            <EllipsisVerticalIcon className='w-5 h-5 text-black' />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className='bg-white' align='end'>
                         <DeleteRoom
                             roomId={room.id}
                             roomName={room.name}
@@ -116,19 +139,27 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                     <p className='text-center text-xs text-gray-400'>No messages yet. Say hello!</p>
                 ) : (
                     messages.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
-                        >
-                            <div className={`px-4 py-2 rounded-2xl max-w-xs text-sm
-                                ${msg.senderId === userId
-                                    ? 'bg-gray-900 text-white rounded-br-sm'
-                                    : 'bg-gray-100 text-gray-900 rounded-bl-sm'
-                                }
-                            `}>
-                                {msg.message}
+                        msg.type === 'system' ? (
+                            <div key={index} className='flex justify-center'>
+                                <span className='text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full'>
+                                    {msg.message}
+                                </span>
                             </div>
-                        </div>
+                        ) : (
+                            <div
+                                key={index}
+                                className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
+                            >
+                                <div className={`px-4 py-2 rounded-2xl max-w-xs text-sm
+                                    ${msg.senderId === userId
+                                        ? 'bg-gray-900 text-white rounded-br-sm'
+                                        : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+                                    }    
+                                `}>
+                                    {msg.message}
+                                </div>
+                            </div>
+                        )
                     ))
                 )}
             </div>

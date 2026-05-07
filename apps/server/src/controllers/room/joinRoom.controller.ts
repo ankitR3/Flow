@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import prisma from '@repo/db';
-import bcrypt from 'bcryptjs';
 
 export default async function joinRoomController(req: Request, res: Response) {
     const { userId, roomId, code } = req.body;
@@ -63,6 +62,7 @@ export default async function joinRoomController(req: Request, res: Response) {
 
         return res.status(201).json({
             success: true,
+            room: existingRoom,
             roomUrl: `/room/${roomId}`,
             message: 'room joined successfully'
         });

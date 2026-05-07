@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import prisma from '@repo/db';
 
 export default async function ownerAuthMiddleware(req: Request, res: Response, next: NextFunction) {
-    const { userId } = req.headers;
-    const { roomId } = req.headers;
+    const userId = req.headers['userid'] as string;
+    const roomId = req.headers['roomid'] as string;
 
     if (!userId) {
         return res.status(401).json({

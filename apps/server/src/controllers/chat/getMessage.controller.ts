@@ -3,6 +3,7 @@ import prisma from '@repo/db';
 
 export default async function getMessageController(req: Request, res: Response) {
     const { roomId } = req.params;
+    const userId = req.query.userId as string;
 
     if (!roomId || typeof roomId != 'string') {
         return res.status(400).json({
@@ -11,9 +12,30 @@ export default async function getMessageController(req: Request, res: Response) 
     }
 
     try {
+        const membership = await prisma.roomMember.findUnique({
+            where: {
+                userId_roomId: {
+                    userId,
+                    roomId,
+                }
+            },
+            select: {
+                joinedAt: true
+            }
+        });
+
+        if (!membership) {
+            return res.status(403).json({
+                message: 'You are not a member of this room'
+            });
+        }
+
         const message = await prisma.message.findMany({
             where: {
-                roomId
+                roomId,
+                createdAt: {
+                    gte: membership.joinedAt
+                }
             },
             include: {
                 author: {

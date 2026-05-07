@@ -17,7 +17,7 @@ interface Room {
 export function useRooms() {
     const { data: session } = useSession();
     const [rooms, setRooms] = useState<Room[]>([]);
-    const { refreshRooms } = useDashboardStore();
+    const { refreshRooms, lastMessageUpdate } = useDashboardStore();
 
     async function fetchRooms() {
         if (!session) return;
@@ -45,6 +45,15 @@ export function useRooms() {
     useEffect(() => {
         fetchRooms();
     }, [session, refreshRooms]);
+
+    useEffect(() => {
+        if (!lastMessageUpdate) return;
+        setRooms(prev => prev.map(room =>
+            room.id === lastMessageUpdate.roomId
+                ? { ...room, lastMessage: lastMessageUpdate.message }
+                : room
+        ));
+    }, [lastMessageUpdate])
 
     return { rooms, fetchRooms };
 }

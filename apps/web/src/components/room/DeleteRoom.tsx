@@ -7,6 +7,8 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
+import { SocketManager } from '@/src/hooks/useSocket';
+import { MessageType } from '@/src/types/socket.types';
 
 interface DeleteRoomProps {
     roomId: string;
@@ -17,7 +19,7 @@ interface DeleteRoomProps {
 
 export default function DeleteRoom({ roomId, roomName, ownerId, onRoomDeleted}: DeleteRoomProps) {
     const { data: session } = useSession();
-    const { setSelectedRoom } = useDashboardStore();
+    const { setSelectedRoom, triggerRefresh } = useDashboardStore();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -33,8 +35,8 @@ export default function DeleteRoom({ roomId, roomName, ownerId, onRoomDeleted}: 
                     headers: {
                         Authorization: `Bearer ${(session as any).user?.token}`,
                         'Content-Type': 'application/json',
-                        'userId': userId,
-                        'roomId': roomId,
+                        'userid': userId,
+                        'roomid': roomId,
                     },
                     data: {
                         roomId
@@ -51,8 +53,21 @@ export default function DeleteRoom({ roomId, roomName, ownerId, onRoomDeleted}: 
                         userId,
                     }
                 });
+                const socket = SocketManager.connect();
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: MessageType.ROOM_EXIT,
+                        roomId,
+                        payload: {
+                            roomId,
+                            userId,
+                            username: (session as any).user?.name,
+                        }
+                    }));
+                }
             }
             setSelectedRoom(null);
+            triggerRefresh();
             onRoomDeleted();
             setOpen(false);
         } catch(err) {

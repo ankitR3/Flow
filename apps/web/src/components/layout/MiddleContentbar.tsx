@@ -7,13 +7,13 @@ import SettingsBase from '../settings/SettingsBase';
 import JoinRoom from '../room/JoinRoom';
 
 export default function middleContentbar() {
-    const { activeTab } = useDashboardStore();
+    const { activeTab, setActiveTab } = useDashboardStore();
 
     switch (activeTab) {
         case DashboardEnum.CHATS:
             return <ChatPanel />
         case DashboardEnum.EXPLORE:
-            return <JoinRoom onRoomJoined={() => {}} />;
+            return <JoinRoom onRoomJoined={() => setActiveTab(DashboardEnum.CHATS)} />;
         case DashboardEnum.SETTINGS:
             return <SettingsBase />
     }

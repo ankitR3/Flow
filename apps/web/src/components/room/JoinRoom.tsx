@@ -7,6 +7,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import axios from 'axios';
+import { SocketManager } from '@/src/hooks/useSocket';
+import { MessageType } from '@/src/types/socket.types';
 
 interface JoinRoomProps {
     onRoomJoined: () => void;
@@ -20,8 +22,7 @@ export default function JoinRoom({ onRoomJoined }: JoinRoomProps) {
     const [success, setSuccess] = useState(false);
 
     async function handleJoinRoom() {
-        if (!code.trim()) return;
-        if (!session) return;
+        if (!code.trim() || !session) return;
         setLoading(true);
         setError(null);
         try {
@@ -35,14 +36,43 @@ export default function JoinRoom({ onRoomJoined }: JoinRoomProps) {
             });
 
             if (res.data.success) {
+                const roomId = res.data.room.id;
+                const userId = (session as any).user?.id;
+                const username = (session as any).user?.name;
+
+                const sendJoinEvent = (socket: WebSocket) => {
+                    socket.send(JSON.stringify({
+                        type: MessageType.ROOM_JOINED,
+                        roomId,
+                        payload: {
+                            roomId,
+                            userId,
+                            username
+                        }
+                    }));
+                };
+
+                const socket = SocketManager.connect();
+                if (socket.readyState === WebSocket.OPEN) {
+                    sendJoinEvent(socket);
+                } else {
+                    socket.addEventListener('open', () => sendJoinEvent(socket), {
+                        once: true
+                    });
+                }
                 setSuccess(true);
                 setCode('');
                 onRoomJoined();
             } else {
-                setError(res.data.message);
+                setError(res.data.message || 'Failed to join room');
             }
-        } catch {
-            setError('Something went wrong. Please try again.');
+        } catch (err: any) {
+            console.error('Join room error FULL:', err);
+            console.error('Response:', err?.response?.data);
+            console.error('Message:', err?.message);
+            setError(
+                err?.response?.data?.message || err?.message || 'Something went wrong. Please try again.'
+            );
         } finally {
             setLoading(false);
         }

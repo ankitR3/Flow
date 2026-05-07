@@ -6,9 +6,11 @@ import axios from 'axios';
 import { GET_MESSAGE_URL } from '@/routes/api-routes';
 
 interface Message {
+    id: string;
     senderId: string;
     message: string;
     timestamp: string;
+    type?: 'chat' | 'system';
 }
 
 export function useMessages(roomId: string) {
@@ -22,14 +24,17 @@ export function useMessages(roomId: string) {
                 const res = await axios.get(GET_MESSAGE_URL(roomId), {
                     headers: {
                         Authorization: `Bearer ${(session as any).user?.token}`,
+                    },
+                    params: {
+                        userId: (session as any).user?.id
                     }
                 });
-                console.log('messages response: ', res.data);
                 const fetched = res.data.messages ?? [];
                 setMessages(fetched.map((msg: any) => ({
                     senderId: msg.author.id,
                     message: msg.content,
                     timestamp: msg.createdAt,
+                    type: msg.type === 'SYSTEM' ? 'system' : 'chat',
                 })));
             } catch (err) {
                 console.log('get message error: ', err);

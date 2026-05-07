@@ -29,11 +29,13 @@ export interface RoomCreated {
 export interface RoomJoined {
     roomId: string;
     userId: string;
+    username: string;
 }
 
 export interface RoomExit {
     roomId: string;
     userId: string;
+    username: string;
 }
 
 export interface RoomDeleted {

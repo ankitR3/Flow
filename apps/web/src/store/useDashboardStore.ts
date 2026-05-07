@@ -10,6 +10,12 @@ interface Room {
     updatedAt?: string;
 }
 
+interface LastMessageUpdate {
+    roomId: string;
+    message: string;
+    ts: number;
+}
+
 interface DashboardStore {
     activeTab: DashboardEnum;
     setActiveTab: (tab: DashboardEnum) => void;
@@ -17,6 +23,8 @@ interface DashboardStore {
     setSelectedRoom: (room: Room | null) => void;
     refreshRooms: number;
     triggerRefresh: () => void;
+    lastMessageUpdate: LastMessageUpdate | null;
+    updateRoomLastMessage: (roomId: string, message: string) => void;
 }
 
 export const useDashboardStore = create<DashboardStore>((set) => ({
@@ -30,4 +38,12 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     triggerRefresh: () => set((state) => ({
         refreshRooms: state.refreshRooms + 1
     })),
+    lastMessageUpdate: null,
+    updateRoomLastMessage: (roomId, message) => set({
+        lastMessageUpdate: {
+            roomId,
+            message,
+            ts: Date.now()
+        }
+    }),
 }));

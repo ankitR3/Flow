@@ -2,6 +2,7 @@ import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';
 import { Server as HTTPServer } from 'http';
 import { MessageType, SocketType } from './socket.types';
+import prisma from '@repo/db';
 
 class WebSocketClass {
     private wss: WebSocketServer;
@@ -42,10 +43,10 @@ class WebSocketClass {
                     return this.broadcastGlobal(socketMessage);
 
                 case MessageType.ROOM_JOINED:
-                    return this.broadcastGlobal(socketMessage);
+                    return this.handleRoomJoined(socketMessage);
 
                 case MessageType.ROOM_EXIT:
-                    return this.broadcastGlobal(socketMessage);
+                    return this.handleRoomExit(socketMessage);
 
                 case MessageType.ROOM_DELETED:
                     return this.broadcastGlobal(socketMessage);
@@ -159,6 +160,45 @@ class WebSocketClass {
             console.log(`Message send to room ${roomId}`);
         } catch (err) {
             console.log('chat message err: ', err);
+        }
+    }
+
+    private async handleRoomJoined(
+        message: Extract<SocketType, { type: MessageType.ROOM_JOINED }>
+    ) {
+        try {
+            const { roomId, payload } = message;
+
+            await prisma.message.create({
+                data: {
+                    roomId,
+                    authorId: payload.userId,
+                    content: `${payload.username} joined the room`,
+                    type: 'SYSTEM',
+                }
+            });
+            this.broadcastGlobal(message);
+        } catch (err) {
+            console.log('handleRoomJoined error:', err);
+        }
+    }
+
+    private async handleRoomExit(
+        message: Extract<SocketType, { type: MessageType.ROOM_EXIT }>
+    ) {
+        try {
+            const { roomId, payload} = message;
+            await prisma.message.create({
+                data: {
+                    roomId,
+                    authorId: payload.userId,
+                    content: `${payload.username} left the room`,
+                    type: 'SYSTEM'
+                }
+            });
+            this.broadcastGlobal(message);
+        } catch (err) {
+            console.log('handleRoomExit error: ', err);
         }
     }
 

@@ -3,7 +3,7 @@ import { MessageType } from '../types/socket.types';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:1515';
 
-class SocketManager {
+export class SocketManager {
     private static instance: WebSocket | null = null;
 
     static connect(): WebSocket {
@@ -29,6 +29,7 @@ export function disconnectSocket() {
 interface UseSocketProps {
     roomId: string;
     userId: string;
+    username: string;
     onMessage: (message: any) => void;
 }
 
@@ -72,6 +73,7 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
     useEffect(() => {
         const socket = SocketManager.connect();
         socketRef.current = socket;
+        let subscribed = false;
 
         const handleOpen = () => {
             socket.send(JSON.stringify({
@@ -81,6 +83,7 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
                     userId
                 }
             }));
+            subscribed = true;
         }
 
         const handleMessage = (event: MessageEvent) => {
@@ -101,15 +104,16 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
         socket.addEventListener('message', handleMessage);
 
         return () => {
-            if (socket.readyState === WebSocket.OPEN) {
+            socket.removeEventListener('open', handleOpen);
+            socket.removeEventListener('message', handleMessage);
+
+            if (subscribed && socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({
                     type: MessageType.UNSUBSCRIBE,
                     roomId,
                 }));
             }
-            socket.removeEventListener('open', handleOpen);
-            socket.removeEventListener('message', handleMessage);
-        }
+        };
     }, [roomId, userId]);
 
     return { sendMessage, sendTyping };
