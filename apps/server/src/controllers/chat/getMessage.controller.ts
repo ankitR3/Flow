@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '@repo/db';
+import { getCachedMessages, setCachedMessages } from '../../redis/redisCache';
 
 export default async function getMessageController(req: Request, res: Response) {
     const { roomId } = req.params;
@@ -30,6 +31,16 @@ export default async function getMessageController(req: Request, res: Response) 
             });
         }
 
+        const cachedMessages = await getCachedMessages(roomId);
+        if (cachedMessages) {
+            console.log(`Cache hit for room ${roomId}`);
+            return res.status(200).json({
+                messages: cachedMessages,
+                message: 'fetched message successfully'
+            });
+        }
+
+        console.log(`Cache miss for ${roomId} - hitting PostgresSql`);
         const message = await prisma.message.findMany({
             where: {
                 roomId,
@@ -51,7 +62,8 @@ export default async function getMessageController(req: Request, res: Response) 
                 createdAt: 'asc'
             },
         });
-
+        await setCachedMessages(roomId, message);
+        
         return res.status(200).json({
             messages: message,
             message: 'fetched message successfully'

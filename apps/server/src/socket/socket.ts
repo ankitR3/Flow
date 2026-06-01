@@ -3,6 +3,8 @@ import WebSocket from 'ws';
 import { Server as HTTPServer } from 'http';
 import { MessageType, SocketType } from './socket.types';
 import prisma from '@repo/db';
+import { publisher, subscriber } from '../redis/redisClient';
+import { invalidateCache } from '../redis/redisCache';
 
 class WebSocketClass {
     private wss: WebSocketServer;
@@ -12,6 +14,7 @@ class WebSocketClass {
         this.wss = new WebSocketServer({ server });
         this.wsConnection = new Map();
         this.init();
+        this.initRedis();
     }
 
     private init() {
@@ -22,6 +25,26 @@ class WebSocketClass {
             socket.on('close', () => {
                 this.cleanupSocket(socket);
             });
+        });
+    }
+
+    private initRedis() {
+        subscriber.subscribe('broadcast_room', 'broadcast_global', (err) => {
+            if (err) {
+                console.log('Redis subscribe error: ', err);
+            }
+        });
+
+        subscriber.on('message', (channel, message) => {
+            const parsed: SocketType = JSON.parse(message);
+
+            if (channel === 'broadcast_room') {
+                this.broadcastToRoom(parsed);
+            }
+
+            if (channel === 'broadcast_global') {
+                this.broadcastGlobal(parsed);
+            }
         });
     }
 
@@ -124,7 +147,7 @@ class WebSocketClass {
         }
     }
 
-    private handleChat(
+    private async handleChat(
         chat: Extract<SocketType, { type: MessageType.CHAT }>,
         socket: WebSocket
     ) {
@@ -151,11 +174,8 @@ class WebSocketClass {
                 }
             });
 
-            room.forEach((s) => {
-                if (s.readyState === WebSocket.OPEN) {
-                    s.send(sendMessage);
-                }
-            });
+            await invalidateCache(roomId);
+            await publisher.publish('broadcast_room', sendMessage);
 
             console.log(`Message send to room ${roomId}`);
         } catch (err) {
@@ -221,14 +241,8 @@ class WebSocketClass {
         return stats;
     }
 
-    private broadcastGlobal(message: SocketType) {
-        const payload = JSON.stringify(message);
-
-        this.wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(payload);
-            }
-        })
+    private async broadcastGlobal(message: SocketType) {
+        await publisher.publish('broadcast_global', JSON.stringify(message));
     }
 
     private broadcastToRoom(message: SocketType) {

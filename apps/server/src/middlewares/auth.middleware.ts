@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { validateSesison } from '../redis/redisSession';
 
-export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export default async function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer')) {
@@ -26,8 +27,14 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
     }
 
     try {
-        const decoded = jwt.verify(token, secret);
-        req.user = decoded as AuthUser;
+        const decoded = jwt.verify(token, secret) as AuthUser;
+        const isValid = await validateSesison(decoded.id, token);
+        if (!isValid) {
+            return res.status(401).json({
+                message: 'session expired or logged out'
+            });
+        }
+        req.user = decoded;
         next();
     } catch (err) {
         console.log('auth error: ', err);

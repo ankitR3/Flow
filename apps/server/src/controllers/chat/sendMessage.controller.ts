@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '@repo/db';
+import { isRateLimited } from '../../redis/redisRateLimit';
 
 export default async function sendMessageController(req: Request, res: Response) {
     const { roomId, content, userId } = req.body;
@@ -11,6 +12,13 @@ export default async function sendMessageController(req: Request, res: Response)
     }
 
     try {
+        const limited = await isRateLimited(userId);
+        if (limited) {
+            return res.status(429).json({
+                message: 'too may messages - slow down'
+            });
+        }
+        
         const room = await prisma.room.findUnique({
             where: {
                 id: roomId

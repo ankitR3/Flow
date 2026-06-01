@@ -1,6 +1,7 @@
 import prisma from '@repo/db';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { createSession } from '../../redis/redisSession';
 
 export default async function loginController(req: Request, res: Response) {
     const { user } = req.body;
@@ -39,7 +40,6 @@ export default async function loginController(req: Request, res: Response) {
         }
 
         const secret = process.env.JWT_SECRET;
-
         if (!secret) {
             return res.status(500).json({
                 message: 'JWT_SECRET is missing'
@@ -56,6 +56,8 @@ export default async function loginController(req: Request, res: Response) {
                 expiresIn: '7d'
             }
         );
+
+        await createSession(myUser.id, token);
 
         return res.status(200).json({
             success: true,
