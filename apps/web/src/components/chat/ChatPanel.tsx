@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import CreateRoom from '../room/CreateRoom';
-import { useRooms } from '../room/GetRooms';
+import { useRooms } from '../../hooks/useRooms';
 import { useDashboardStore } from '@/src/store/useDashboardStore';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { disconnectSocket } from '@/src/hooks/useSocket';
 
 export default function ChatPanel() {
-    const { rooms, fetchRooms } = useRooms()
+    const { rooms, fetchRooms, loading } = useRooms();
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('All');
     const { setSelectedRoom } = useDashboardStore();
@@ -55,7 +55,7 @@ export default function ChatPanel() {
                 </div>
 
                 {/* Search bar */}
-                <div className='flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2'>
+                <div suppressHydrationWarning className='flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2'>
                     <svg className='w-4 h-6 text-gray-400' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} strokeLinecap='round' strokeLinejoin='round'>
                         <circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/>
                     </svg>
@@ -91,7 +91,19 @@ export default function ChatPanel() {
 
             {/* Room list */}
             <div className='flex-1 overflow-y-auto'>
-                {filtered.length === 0 ? (
+                {loading ? (
+                    <div className='flex flex-col gap-1 px-4 pt-2'>
+                        {[1,2,3].map((i) => (
+                            <div key={i} className='flex items-center gap-3 py-3'>
+                                <div className='w-12 h-12 rounded-full bg-gray-100 animate-pulse flex-shrink-0'/>
+                                <div className='flex-1 space-y-2'>
+                                    <div className='h-3 bg-gray-100 rounded animate-pulse w-1/3'/>
+                                    <div className='h-3 bg-gray-100 rounded animate-pulse w-2/3'/>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : filtered.length === 0 ? (
                     <div className='flex items-center justify-center h-full text-sm text-gray-400'>
                         No chats found
                     </div>

@@ -1,20 +1,8 @@
 'use client'
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import LogInButton from "@/src/components/auth/LoginButton";
 
 export default function Home() {
-  const { status } = useSession();
-  const router = useRouter();
-
-   useEffect(() => {
-        if (status === 'authenticated') {
-            router.replace('/dashboard');
-        }
-    }, [status]);
-
   return (
     <div className='min-h-screen bg-white flex flex-col'>
 

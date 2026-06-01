@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { GET_ROOM_URL } from '@/routes/api-routes';
@@ -17,6 +18,7 @@ interface Room {
 export function useRooms() {
     const { data: session } = useSession();
     const [rooms, setRooms] = useState<Room[]>([]);
+    const [loading, setLoading] = useState(true);
     const { refreshRooms, lastMessageUpdate } = useDashboardStore();
 
     async function fetchRooms() {
@@ -39,6 +41,8 @@ export function useRooms() {
             setRooms(allRooms);
         } catch (err) {
             console.log('get room error: ', err);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -55,5 +59,5 @@ export function useRooms() {
         ));
     }, [lastMessageUpdate])
 
-    return { rooms, fetchRooms };
+    return { rooms, fetchRooms, loading };
 }
