@@ -197,7 +197,7 @@ class WebSocketClass {
                     type: 'SYSTEM',
                 }
             });
-            this.broadcastGlobal(message);
+            this.broadcastToRoom(message);
         } catch (err) {
             console.log('handleRoomJoined error:', err);
         }
@@ -206,6 +206,7 @@ class WebSocketClass {
     private async handleRoomExit(
         message: Extract<SocketType, { type: MessageType.ROOM_EXIT }>
     ) {
+        console.log("ROOM_EXIT RECEIVED:", message);
         try {
             const { roomId, payload} = message;
             await prisma.message.create({
@@ -216,7 +217,7 @@ class WebSocketClass {
                     type: 'SYSTEM'
                 }
             });
-            this.broadcastGlobal(message);
+            this.broadcastToRoom(message);
         } catch (err) {
             console.log('handleRoomExit error: ', err);
         }

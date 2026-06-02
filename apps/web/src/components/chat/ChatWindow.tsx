@@ -99,7 +99,6 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
 
     const handleMessage = useCallback((data: any) => {
         if (data.type === MessageType.CHAT) {
-            // console.log('chat payload: ', data.payload);
             setMessages((prev) => [...prev, data.payload]);
             updateRoomLastMessage(room.id, data.payload.message);
         }
@@ -116,6 +115,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
         }
 
         if (data.type === MessageType.ROOM_EXIT) {
+            console.log('ROOM_EXIT received', data);
             setMessages((prev) => [...prev, {
                 id: Date.now().toString(),
                 senderId: 'system',
