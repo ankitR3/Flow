@@ -8,6 +8,7 @@ import { GET_MESSAGE_URL } from '@/routes/api-routes';
 interface Message {
     id: string;
     senderId: string;
+    senderName?: string;
     message: string;
     timestamp: string;
     type?: 'chat' | 'system';
@@ -32,6 +33,7 @@ export function useMessages(roomId: string) {
                 const fetched = res.data.messages ?? [];
                 setMessages(fetched.map((msg: any) => ({
                     senderId: msg.author.id,
+                    senderName: msg.author.name,
                     message: msg.content,
                     timestamp: msg.createdAt,
                     type: msg.type === 'SYSTEM' ? 'system' : 'chat',

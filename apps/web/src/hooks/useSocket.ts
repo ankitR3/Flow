@@ -33,7 +33,7 @@ interface UseSocketProps {
     onMessage: (message: any) => void;
 }
 
-export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
+export function useSocket({ roomId, userId, username, onMessage}: UseSocketProps) {
     const socketRef = useRef<WebSocket | null>(null);
     const onMessageRef = useRef(onMessage);
 
@@ -51,10 +51,11 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
             payload: {
                 message,
                 senderId: userId,
+                senderName: username,
                 timestamp: new Date().toISOString(),
             }
         }));
-    }, [roomId, userId]);
+    }, [roomId, userId, username]);
 
     const sendTyping = useCallback((isTyping: boolean) => {
         const socket = socketRef.current;
@@ -65,10 +66,10 @@ export function useSocket({ roomId, userId, onMessage}: UseSocketProps) {
             roomId,
             payload: {
                 userId,
-                username: userId,
+                username,
             }
         }));
-    }, [roomId, userId]);
+    }, [roomId, userId, username]);
 
     useEffect(() => {
         const socket = SocketManager.connect();

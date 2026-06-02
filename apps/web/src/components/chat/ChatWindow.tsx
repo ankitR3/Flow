@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSocket } from '@/src/hooks/useSocket';
 import { MessageType } from '@/src/types/socket.types';
@@ -26,6 +26,37 @@ interface ChatWindowProps {
     onRoomDeleted: () => void;
 }
 
+const USER_COLORS = [
+    { bg: 'bg-blue-500',    text: 'text-white', bubble: 'bg-blue-100',    bubbleText: 'text-blue-900'    },
+    { bg: 'bg-emerald-500', text: 'text-white', bubble: 'bg-emerald-100', bubbleText: 'text-emerald-900' },
+    { bg: 'bg-violet-500',  text: 'text-white', bubble: 'bg-violet-100',  bubbleText: 'text-violet-900'  },
+    { bg: 'bg-rose-500',    text: 'text-white', bubble: 'bg-rose-100',    bubbleText: 'text-rose-900'    },
+    { bg: 'bg-amber-500',   text: 'text-white', bubble: 'bg-amber-100',   bubbleText: 'text-amber-900'   },
+    { bg: 'bg-cyan-500',    text: 'text-white', bubble: 'bg-cyan-100',    bubbleText: 'text-cyan-900'    },
+];
+
+const senderColorMap = new Map<string, (typeof USER_COLORS)[number]>();
+let colorIndex = 0;
+
+function getColorForSender(senderId: string) {
+    if (!senderColorMap.has(senderId)) {
+        senderColorMap.set(
+            senderId,
+            USER_COLORS[colorIndex % USER_COLORS.length]!
+        );
+        colorIndex++;
+    }
+    return senderColorMap.get(senderId)!;
+}
+
+function getInitials(nameOrId: string) {
+    const parts = nameOrId.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
+    }
+    return nameOrId.slice(0, 2).toUpperCase();
+}
+
 export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const { data: session } = useSession();
     const { messages, setMessages } = useMessages(room.id);
@@ -37,11 +68,19 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const userId = (session as any)?.user?.id ?? '';
     const username = (session as any)?.user?.name ?? 'someone';
 
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
     const handleMessage = useCallback((data: any) => {
         if (data.type === MessageType.CHAT) {
+            console.log('chat payload: ', data.payload);
             setMessages((prev) => [...prev, data.payload]);
             updateRoomLastMessage(room.id, data.payload.message);
         }
+
         if (data.type === MessageType.ROOM_JOINED) {
             setMessages((prev) => [...prev, {
                 id: Date.now().toString(),
@@ -52,6 +91,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
             }]);
             triggerRefresh();
         }
+
         if (data.type === MessageType.ROOM_EXIT) {
             setMessages((prev) => [...prev, {
                 id: Date.now().toString(),
@@ -78,11 +118,12 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     }
 
     async function handleSend() {
-        if (!input.trim()) return;
-        sendMessage(input);
-        await saveMessage(input);
-        triggerRefresh();
+        const text = input.trim();
+        if (!text) return;
         setInput('');
+        sendMessage(text);
+        await saveMessage(text);
+        triggerRefresh();
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -135,33 +176,58 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
 
             {/* Messages area */}
             <div className='flex-1 overflow-y-auto p-4 flex flex-col gap-2'>
-                {messages.length === 0 ? (
-                    <p className='text-center text-xs text-gray-400'>No messages yet. Say hello!</p>
-                ) : (
-                    messages.map((msg, index) => (
-                        msg.type === 'system' ? (
+                {messages.map((msg, index) => {
+                    const isMe = msg.senderId === userId;
+                    const isSystem = msg.type === 'system';
+
+                    if (isSystem) {
+                        return (
                             <div key={index} className='flex justify-center'>
                                 <span className='text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full'>
                                     {msg.message}
                                 </span>
                             </div>
-                        ) : (
-                            <div
-                                key={index}
-                                className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div className={`px-4 py-2 rounded-2xl max-w-xs text-sm
-                                    ${msg.senderId === userId
-                                        ? 'bg-gray-900 text-white rounded-br-sm'
-                                        : 'bg-gray-100 text-gray-900 rounded-bl-sm'
-                                    }    
-                                `}>
-                                    {msg.message}
+                        );
+                    }
+
+                    const color = isMe ? null : getColorForSender(msg.senderId);
+                    const initials = getInitials(msg.senderName ?? msg.senderId);
+
+                    return (
+                        <div
+                            key={index}
+                            className={`flex items-end gap-2 ${
+                                isMe ? 'justify-end' : 'justify-start'
+                            }`}
+                        >
+                            {!isMe && (
+                                <div
+                                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${color!.bg} ${color!.text}`}
+                                >
+                                    {initials}
                                 </div>
+                            )}
+
+                            <div
+                                className={`px-4 py-2 rounded-2xl max-w-xs text-sm ${
+                                    isMe
+                                        ? 'bg-gray-900 text-white rounded-br-sm'
+                                        : `${color!.bubble} ${color!.bubbleText} rounded-bl-sm`
+                                }`}
+                            >
+                                {!isMe && (
+                                    <p
+                                        className={`text-xs font-semibold mb-0.5 ${color!.bubbleText} opacity-70`}
+                                    >
+                                        {msg.senderName ?? msg.senderId}
+                                    </p>
+                                )}
+
+                                {msg.message}
                             </div>
-                        )
-                    ))
-                )}
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Input */}

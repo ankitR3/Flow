@@ -14,6 +14,7 @@ export interface Chat {
     message: string;
     timestamp: string;
     senderId: string;
+    senderName: string;
 }
 
 export interface Subscribe {
