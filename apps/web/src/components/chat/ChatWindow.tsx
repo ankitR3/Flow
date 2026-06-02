@@ -76,7 +76,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
 
     const handleMessage = useCallback((data: any) => {
         if (data.type === MessageType.CHAT) {
-            console.log('chat payload: ', data.payload);
+            // console.log('chat payload: ', data.payload);
             setMessages((prev) => [...prev, data.payload]);
             updateRoomLastMessage(room.id, data.payload.message);
         }
@@ -228,6 +228,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                         </div>
                     );
                 })}
+                <div ref={bottomRef}/>
             </div>
 
             {/* Input */}
