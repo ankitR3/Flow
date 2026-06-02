@@ -54,7 +54,6 @@ export default function DeleteRoom({ roomId, roomName, ownerId, onRoomDeleted}: 
                     }
                 });
                 const socket = SocketManager.connect();
-                console.log("SOCKET STATE", socket.readyState);
                 if (socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify({
                         type: MessageType.ROOM_EXIT,
