@@ -68,11 +68,34 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const userId = (session as any)?.user?.id ?? '';
     const username = (session as any)?.user?.name ?? 'someone';
 
-    const bottomRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const shouldScrollRef = useRef(true);
+
+    const handleScroll = () => {
+        const container = messagesContainerRef.current;
+
+        if (!container) return;
+        const isNearBottom =
+            container.scrollHeight -
+            container.scrollTop -
+            container.clientHeight <
+            100;
+        shouldScrollRef.current = isNearBottom;
+    };
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        const container = messagesContainerRef.current;
+
+        if (!container || messages.length === 0) return;
+
+        const lastMessage = messages[messages.length - 1];
+
+        const isMyMessage = lastMessage.senderId === userId;
+
+        if (isMyMessage || shouldScrollRef.current) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [messages, userId]);
 
     const handleMessage = useCallback((data: any) => {
         if (data.type === MessageType.CHAT) {
@@ -119,7 +142,11 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
 
     async function handleSend() {
         const text = input.trim();
+
         if (!text) return;
+
+        shouldScrollRef.current = true;
+
         setInput('');
         sendMessage(text);
         await saveMessage(text);
@@ -175,7 +202,11 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
             </div>
 
             {/* Messages area */}
-            <div className='flex-1 overflow-y-auto p-4 flex flex-col gap-2'>
+            <div
+                ref={messagesContainerRef}
+                onScroll={handleScroll}
+                className='flex-1 overflow-y-auto p-4 flex flex-col gap-2'
+            >
                 {messages.map((msg, index) => {
                     const isMe = msg.senderId === userId;
                     const isSystem = msg.type === 'system';
@@ -228,7 +259,6 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                         </div>
                     );
                 })}
-                <div ref={bottomRef}/>
             </div>
 
             {/* Input */}
