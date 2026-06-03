@@ -19,7 +19,7 @@ export function useRooms() {
     const { data: session } = useSession();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
-    const { lastMessageUpdate } = useDashboardStore();
+    const { lastMessageUpdate, refreshRooms } = useDashboardStore();
 
     async function fetchRooms() {
         if (!session) return;
@@ -48,7 +48,7 @@ export function useRooms() {
 
     useEffect(() => {
         fetchRooms();
-    }, [session]);
+    }, [session, refreshRooms]);
 
     useEffect(() => {
         if (!lastMessageUpdate) return;
