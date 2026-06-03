@@ -96,13 +96,12 @@ export function useSocket({ roomId, userId, username, onMessage}: UseSocketProps
             }
         }
 
+        socket.addEventListener('message', handleMessage);
         if (socket.readyState === WebSocket.OPEN) {
             handleOpen();
         } else {
             socket.addEventListener('open', handleOpen);
         }
-
-        socket.addEventListener('message', handleMessage);
 
         return () => {
             socket.removeEventListener('open', handleOpen);
