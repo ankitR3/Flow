@@ -232,14 +232,14 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                         >
                             {!isMe && (
                                 <div
-                                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${color!.bg} ${color!.text}`}
+                                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${color!.bg} ${color!.text}`}
                                 >
                                     {initials}
                                 </div>
                             )}
 
                             <div
-                                className={`px-4 py-2 rounded-2xl max-w-xs text-sm ${
+                                className={`px-4 py-2 rounded-2xl max-w-xs text-sm wrap-break-word ${
                                     isMe
                                         ? 'bg-gray-900 text-white rounded-br-sm'
                                         : `${color!.bubble} ${color!.bubbleText} rounded-bl-sm`
@@ -272,7 +272,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                 />
                 <button
                     onClick={handleSend}
-                    className='w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0'
+                    className='w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center shrink-0'
                 >
                     <svg className='w-4 h-4 stroke-white fill-none' viewBox='0 0 24 24' strokeWidth={2} strokeLinecap='round' strokeLinejoin='round'>
                         <line x1='22' y1='2' x2='11' y2='13'/><polygon points='22 2 15 22 11 13 2 9 22 2' fill='white'/>

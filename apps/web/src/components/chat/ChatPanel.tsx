@@ -95,7 +95,7 @@ export default function ChatPanel() {
                     <div className='flex flex-col gap-1 px-4 pt-2'>
                         {[1,2,3].map((i) => (
                             <div key={i} className='flex items-center gap-3 py-3'>
-                                <div className='w-12 h-12 rounded-full bg-gray-100 animate-pulse flex-shrink-0'/>
+                                <div className='w-12 h-12 rounded-full bg-gray-100 animate-pulse shrink-0'/>
                                 <div className='flex-1 space-y-2'>
                                     <div className='h-3 bg-gray-100 rounded animate-pulse w-1/3'/>
                                     <div className='h-3 bg-gray-100 rounded animate-pulse w-2/3'/>
@@ -115,7 +115,7 @@ export default function ChatPanel() {
                             className='flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-all'
                         >
                             {/* Avatar */}
-                            <div className='w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-sm flex-shrink-0'>
+                            <div className='w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-sm shrink-0'>
                                 {room.name.charAt(0).toUpperCase()}
                             </div>
 
