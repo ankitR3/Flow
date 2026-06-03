@@ -25,6 +25,15 @@ interface DashboardStore {
     triggerRefresh: () => void;
     lastMessageUpdate: LastMessageUpdate | null;
     updateRoomLastMessage: (roomId: string, message: string) => void;
+    activeUsers: {
+        id: string,
+        name: string
+    }[];
+    addActiveUser: (user: {
+        id: string;
+        name: string;
+    }) => void;
+    removeActiveUser: (userId: string) => void;
 }
 
 export const useDashboardStore = create<DashboardStore>((set) => ({
@@ -46,4 +55,11 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
             ts: Date.now()
         }
     }),
+    activeUsers: [],
+    addActiveUser: (user) => set((state) => ({
+        activeUsers: [...state.activeUsers.filter(u => u.id !== user.id), user]
+    })),
+    removeActiveUser: (userId) => set((state) => ({
+        activeUsers: state.activeUsers.filter(u => u.id !== userId)
+    })),
 }));

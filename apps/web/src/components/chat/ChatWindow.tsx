@@ -63,7 +63,7 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
     const { saveMessage } = useSendMessage(room.id);
     const [copied, setCopied] = useState(false);
     const [input, setInput] = useState('');
-    const { triggerRefresh, updateRoomLastMessage } = useDashboardStore();
+    const { updateRoomLastMessage, addActiveUser, removeActiveUser } = useDashboardStore();
 
     const userId = (session as any)?.user?.id ?? '';
     const username = (session as any)?.user?.name ?? 'someone';
@@ -111,7 +111,10 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                 timestamp: new Date().toISOString(),
                 type: 'system'
             }]);
-            triggerRefresh();
+            addActiveUser({
+                id: data.payload.userId,
+                name: data.payload.username
+            });
         }
 
         if (data.type === MessageType.ROOM_EXIT) {
@@ -123,9 +126,9 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
                 timestamp: new Date().toISOString(),
                 type: 'system'
             }]);
-            triggerRefresh();
+            removeActiveUser(data.payload.userId);
         }
-    }, [triggerRefresh, updateRoomLastMessage]);
+    }, [updateRoomLastMessage, addActiveUser, removeActiveUser]);
 
     const { sendMessage } = useSocket({
         roomId: room.id,
@@ -142,19 +145,15 @@ export default function ChatWindow({ room, onRoomDeleted }: ChatWindowProps) {
 
     async function handleSend() {
         const text = input.trim();
-
         if (!text) return;
-
         shouldScrollRef.current = true;
-
         setInput('');
         sendMessage(text);
         await saveMessage(text);
-        triggerRefresh();
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.key === 'Enter') handleSend();
+        if (e.key === 'Enter' && !e.repeat) handleSend();
     }
 
     return (
