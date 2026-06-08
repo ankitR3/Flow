@@ -4,6 +4,7 @@ import cors from 'cors';
 import roomRouter from './routers/room.router';
 import authRouter from './routers/auth.router';
 import chatRouter from './routers/chat.router';
+import healthRouter from './routers/health.route';
 import WebSocketClass from './socket/socket';
 import http from 'http';
 
@@ -28,6 +29,7 @@ app.use(cors({
 app.use('/api/v1/room', roomRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/chat', chatRouter);
+app.use('/api/', healthRouter)
 
 const server = http.createServer(app);
 new WebSocketClass(server);
