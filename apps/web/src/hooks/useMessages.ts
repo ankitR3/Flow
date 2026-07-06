@@ -43,7 +43,7 @@ export function useMessages(roomId: string) {
             }
         }
         fetchMessages();
-    }, [roomId]);
+    }, [roomId, session]);
 
     return { messages, setMessages };
 }

@@ -21,7 +21,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Right chat panel: full screen on mobile when a chat is selected, hidden on mobile if no chat is selected */}
-            <div className={`${selectedRoom ? 'flex-1' : 'hidden md:flex'} h-full min-w-0`}>
+            <div className={`${selectedRoom ? 'flex-1' : 'hidden md:flex md:flex-1'} h-full min-w-0`}>
                 <RightChatContent />
             </div>
         </div>
