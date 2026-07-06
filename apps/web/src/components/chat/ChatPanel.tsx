@@ -28,7 +28,7 @@ export default function ChatPanel() {
     );
 
     return (
-        <div className='h-screen w-120 border-r border-gray-200 flex flex-col bg-white'>
+        <div className='h-screen w-full md:w-80 lg:w-96 border-r border-gray-200 flex flex-col bg-white'>
 
             {/* Header */}
             <div className='px-4 py-4 border-gray-200'>

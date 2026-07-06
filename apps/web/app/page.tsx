@@ -17,8 +17,8 @@ export default function Home() {
           <span className='text-base font-medium text-gray-900 tracking-tight'>Flow</span>
         </div>
         <div className='flex items-center gap-4'>
-          <span className='text-sm text-gray-500 cursor-pointer hover:text-gray-900'>Features</span>
-          <span className='text-sm text-gray-500 cursor-pointer hover:text-gray-900'>About</span>
+          <span className='hidden sm:block text-sm text-gray-500 cursor-pointer hover:text-gray-900'>Features</span>
+          <span className='hidden sm:block text-sm text-gray-500 cursor-pointer hover:text-gray-900'>About</span>
           <LogInButton />
         </div>
       </nav>
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
 
         {/* Features */}
-        <div className='grid grid-cols-3 gap-3 mt-10 w-full max-w-lg'>
+        <div className='grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10 w-full max-w-lg'>
           {[
             { title: 'Encrypted', desc: 'Every message is private and secure.', icon: '🔒' },
             { title: 'Real-time', desc: 'Messages delivered instantly.', icon: '⚡' },

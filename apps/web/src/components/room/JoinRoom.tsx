@@ -79,7 +79,7 @@ export default function JoinRoom({ onRoomJoined }: JoinRoomProps) {
     }
 
     return (
-        <div className='h-screen flex flex-col items-center justify-center bg-white w-120 border-r border-gray-200'>
+        <div className='h-screen flex flex-col items-center justify-center bg-white w-full md:w-80 lg:w-96 border-r border-gray-200'>
             <div className='w-full max-w-sm px-6'>
                 <h2 className='text-xl font-semibold text-gray-900 mb-1'>Join a room</h2>
                 <p className='text-sm text-gray-400 mb-6'>Enter the room code to join</p>

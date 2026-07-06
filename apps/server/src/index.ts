@@ -22,8 +22,7 @@ app.use(cors({
     origin: [
         'http://localhost:3000',
         'https://flow-web-omega.vercel.app'
-    ]
-    
+    ] 
 }));
 
 app.use('/api/v1/room', roomRouter);
