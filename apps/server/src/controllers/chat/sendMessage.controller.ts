@@ -55,23 +55,6 @@ export default async function sendMessageController(req: Request, res: Response)
         // Invalidate message cache
         await invalidateCache(roomId);
 
-        // Broadcast to WebSocket clients via Redis publisher
-        try {
-            const socketMessage = JSON.stringify({
-                type: 'CHAT',
-                roomId,
-                payload: {
-                    message: content,
-                    senderId: userId,
-                    senderName: message.author.name,
-                    timestamp: message.createdAt.toISOString()
-                }
-            });
-            await publisher.publish('broadcast_room', socketMessage);
-        } catch (redisErr) {
-            console.log('Redis publish error in HTTP send-message: ', redisErr);
-        }
-
         return res.status(201).json({
             data: message,
             message: 'sent message successfully'
